@@ -83,7 +83,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         if(times.get(position).getFlag()==1)
         {
             tag_list.add(new Integer(position));
-            //holder.slideButton.setStatus(true);
+            holder.time.setTextColor(context.getResources().getColor(R.color.darkblack));
+        }
+        else
+        {
+            holder.time.setTextColor(context.getResources().getColor(R.color.black));
         }
         holder.slideButton.setTag(new Integer(position));//设置tag,否则状态出现错乱
         if(tag_list!=null)
@@ -103,6 +107,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                         tag_list.add(new Integer(position));
                     }
                     obj.setStatus(true);
+                    holder.time.setTextColor(context.getResources().getColor(R.color.darkblack));
                 }
                 else
                 {
@@ -110,9 +115,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                     {
                         tag_list.remove(new Integer(position));
                     }
+                    holder.time.setTextColor(context.getResources().getColor(R.color.black));
                     obj.setStatus(false);
                 }
-                Toast.makeText(context,"status="+status+"",Toast.LENGTH_SHORT).show();
             }
         });
     }
