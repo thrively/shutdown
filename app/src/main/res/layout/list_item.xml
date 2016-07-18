@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:id="@+id/holder"
+    android:background="@drawable/item_press">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="25dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="2014/12/20"
+        android:textSize="20dp"
+        android:id="@+id/time"/>
+    <com.zqb.shutdown.SlideButton
+        android:layout_width="116dip"
+        android:layout_height="46dip"
+        android:id="@+id/slide_btn"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
+</RelativeLayout>
