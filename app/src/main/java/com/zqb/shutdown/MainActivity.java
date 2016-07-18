@@ -27,6 +27,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         db_write = helper.getWritableDatabase();
         times=new LinkedList<Item>();
         id=new ArrayList();
+
+        //启动后台Service
+        Intent intent=new Intent(MainActivity.this, ClockService.class);
+        startService(intent);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                         ContentValues cv=new ContentValues();
                         cv.put("time",hour+":"+minute);
                         update("time_record",cv,"id=?",position);
+                        times=queryAllResult();
                         dialog.dismiss();
                     }
                 });
@@ -177,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         list.setAdapter(adapter);
+
     }
 
     public List<Item> queryAllResult()
@@ -193,6 +201,14 @@ public class MainActivity extends AppCompatActivity {
                 times.add(new Item(time, flag));
                 result.moveToNext();
             }
+        }
+        if(times!=null)
+        {
+            Log.i("sendBroadcast","发送广播了");
+            Intent intent=new Intent(ConstUtil.SERVICE_ACTION);
+            //intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            //intent.putExtra("times", (Serializable) times);
+            sendBroadcast(intent);
         }
         return times;
     }
@@ -212,6 +228,4 @@ public class MainActivity extends AppCompatActivity {
     {
         db_write.insert(table,nullCol,cv);
     }
-
-
 }
