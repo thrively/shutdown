@@ -2,6 +2,7 @@ package com.zqb.shutdown;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -22,7 +25,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private Context context;
     private MyItemClickListener mItemClickListener;
     private MyItemLongClickListener mItemLongClickListener;
-
+    private HashSet<Integer>tag_list=new HashSet<>();
     public ListAdapter(Context context,List<Item>times)
     {
         this.context=context;
@@ -77,14 +80,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 return true;
             }
         });
-        holder.slideButton.setTag(new Integer(position));//设置tag,否则状态出现错乱
-        if(times.get(position).getFlag()==0)
+        if(times.get(position).getFlag()==1)
         {
-            holder.slideButton.setStatus(false);
+            tag_list.add(new Integer(position));
+            //holder.slideButton.setStatus(true);
         }
-        else
+        holder.slideButton.setTag(new Integer(position));//设置tag,否则状态出现错乱
+        if(tag_list!=null)
         {
-            holder.slideButton.setStatus(true);
+            holder.slideButton.setStatus(tag_list.contains(new Integer(position))?true:false);
         }
         holder.slideButton.setOnSwitchChangedListener(new SlideButton.OnSwitchChangedListener() {
             @Override
@@ -92,13 +96,21 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 ContentValues cv=new ContentValues();
                 cv.put("flag",status);
                 MainActivity.update("time_record",cv,"id=?",position);
-                if(status==0)
+                if(status==1)
                 {
-                    obj.setStatus(false);
+                    if(!tag_list.contains(holder.slideButton.getTag()))
+                    {
+                        tag_list.add(new Integer(position));
+                    }
+                    obj.setStatus(true);
                 }
                 else
                 {
-                    obj.setStatus(true);
+                    if(tag_list.contains(holder.slideButton.getTag()))
+                    {
+                        tag_list.remove(new Integer(position));
+                    }
+                    obj.setStatus(false);
                 }
                 Toast.makeText(context,"status="+status+"",Toast.LENGTH_SHORT).show();
             }
