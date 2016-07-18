@@ -18,7 +18,6 @@ import java.util.List;
  * Created by zqb on 2016/7/15.
  */
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private DBSQL dbsql;
     private List<Item>times;
     private Context context;
     private MyItemClickListener mItemClickListener;
@@ -28,7 +27,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     {
         this.context=context;
         this.times=times;
-
     }
 
     @Override
@@ -58,7 +56,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) //此position为全部item中的位置
     {
-        dbsql=new DBSQL(context);
+
         holder.time.setText(times.get(position).getTime());
         holder.rl_holder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +77,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 return true;
             }
         });
+        holder.slideButton.setTag(new Integer(position));//设置tag,否则状态出现错乱
         if(times.get(position).getFlag()==0)
         {
             holder.slideButton.setStatus(false);
@@ -92,12 +91,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             public void onSwitchChanged(SlideButton obj, int status) {
                 ContentValues cv=new ContentValues();
                 cv.put("flag",status);
-                dbsql.update("time_record",cv,"id=?",position);
+                MainActivity.update("time_record",cv,"id=?",position);
                 if(status==0)
                 {
                     obj.setStatus(false);
                 }
-
                 else
                 {
                     obj.setStatus(true);
