@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private SQLiteOpenHelper helper;
     private SQLiteDatabase db_read;
     private static SQLiteDatabase db_write;
+    private ListAdapter.ViewHolder holder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         //启动后台Service
         Intent intent=new Intent(MainActivity.this, ClockService.class);
         startService(intent);
-
+        times = queryAllResult();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,15 +102,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        times = queryAllResult();
-        //id=dbsql.getId();
         list = (RecyclerView) findViewById(R.id.list);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayout.VERTICAL, false);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayout.VERTICAL, false);
         list.setLayoutManager(layoutManager);
         list.addItemDecoration(new ItemDivider(MainActivity.this, layoutManager.getOrientation()));
         //设置添加删除item时候的动画
         list.setItemAnimator(new DefaultItemAnimator());
         adapter = new ListAdapter(MainActivity.this, times);
+
         adapter.setOnItemClickListener(new ListAdapter.MyItemClickListener() {
             @Override
             public void onItemClick(final ListAdapter.ViewHolder viewHolder, final int position) {
@@ -145,11 +145,16 @@ public class MainActivity extends AppCompatActivity {
                 picker_hour.setMaxValue(23);
                 picker_minute.setMinValue(0);
                 picker_minute.setMaxValue(59);
-                Date date=new Date();
-                int cur_hour=date.getHours();
-                int cur_minute=date.getMinutes();
-                picker_hour.setValue(cur_hour);
-                picker_minute.setValue(cur_minute);
+                String time=times.get(position).getTime();
+                picker_hour.setValue(Integer.parseInt(time.substring(0,time.indexOf(":"))));
+                picker_minute.setValue(Integer.parseInt(time.substring(time.indexOf(":")+1)));
+
+
+//                Date date=new Date();
+//                int cur_hour=date.getHours();
+//                int cur_minute=date.getMinutes();
+//                picker_hour.setValue(cur_hour);
+//                picker_minute.setValue(cur_minute);
             }
         });
         adapter.setOnItemLongClickListener(new ListAdapter.MyItemLongClickListener() {
@@ -199,6 +204,10 @@ public class MainActivity extends AppCompatActivity {
                 int flag = result.getInt(result.getColumnIndex("flag"));
                 id.add(result.getInt(result.getColumnIndex("id")));
                 times.add(new Item(time, flag));
+                if(flag==1)
+                {
+
+                }
                 result.moveToNext();
             }
         }
@@ -206,17 +215,14 @@ public class MainActivity extends AppCompatActivity {
         {
             Log.i("sendBroadcast","发送广播了");
             Intent intent=new Intent(ConstUtil.SERVICE_ACTION);
-            //intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            //intent.putExtra("times", (Serializable) times);
+            intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            intent.putExtra("times", (Serializable) times);
             sendBroadcast(intent);
         }
         return times;
     }
     public static void update(String table, ContentValues cv, String where, int position)
     {
-        //Toast.makeText(MainActivity.this,"id_size="+id.size(),Toast.LENGTH_SHORT).show();
-        //Toast.makeText(MainActivity.this,"position="+position,Toast.LENGTH_SHORT).show();
-        //Toast.makeText(context,"id="+String.valueOf(id.get(position)),Toast.LENGTH_SHORT).show();
         db_write.update(table,cv,where,new String[]{String.valueOf(id.get(position))});
     }
     public void delete(String table,String where,int position)
@@ -228,4 +234,10 @@ public class MainActivity extends AppCompatActivity {
     {
         db_write.insert(table,nullCol,cv);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
 }
