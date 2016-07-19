@@ -23,6 +23,7 @@ public class ClockService extends Service {
     private ArrayList hours=new ArrayList();
     private ArrayList minutes=new ArrayList();
     private ClockServiceReceiver receiver;
+    public static final String ACTION_REQUEST_SHUTDOWN = "android.intent.action.ACTION_REQUEST_SHUTDOWN";
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -62,7 +63,7 @@ public class ClockService extends Service {
                         Log.i("分界线","====================================");
                         if(cur_hour.equals(hours.get(i).toString())&&cur_minute.equals(minutes.get(i).toString()))
                         {
-                            Intent newIntent = new Intent("android.intent.action.ACTION_SHUTDOWN");
+                            Intent newIntent = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
                             newIntent.putExtra("android.intent.extra.KEY_CONFIRM", false);
                             newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(newIntent);
